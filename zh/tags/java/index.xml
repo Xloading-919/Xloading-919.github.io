@@ -10,9 +10,9 @@
     <atom:link href="https://Xloading-919.github.io/zh/tags/java/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>AQS漫谈</title>
-      <link>https://Xloading-919.github.io/zh/posts/tech/aqs%E6%BC%AB%E8%B0%88/</link>
+      <link>https://Xloading-919.github.io/zh/aqs%E6%BC%AB%E8%B0%88/</link>
       <pubDate>Tue, 30 Sep 2025 17:24:53 +0800</pubDate>
-      <guid>https://Xloading-919.github.io/zh/posts/tech/aqs%E6%BC%AB%E8%B0%88/</guid>
+      <guid>https://Xloading-919.github.io/zh/aqs%E6%BC%AB%E8%B0%88/</guid>
       <description>锁实现</description>
     </item>
   </channel>

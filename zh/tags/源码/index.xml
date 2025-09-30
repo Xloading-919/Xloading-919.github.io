@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>源码 on Xloading&#39;s Blog</title>
+    <link>https://Xloading-919.github.io/zh/tags/%E6%BA%90%E7%A0%81/</link>
+    <description>Recent content in 源码 on Xloading&#39;s Blog</description>
+    <generator>Hugo -- 0.150.1</generator>
+    <language>zh</language>
+    <lastBuildDate>Tue, 30 Sep 2025 17:24:53 +0800</lastBuildDate>
+    <atom:link href="https://Xloading-919.github.io/zh/tags/%E6%BA%90%E7%A0%81/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AQS漫谈</title>
+      <link>https://Xloading-919.github.io/zh/posts/tech/aqs%E6%BC%AB%E8%B0%88/</link>
+      <pubDate>Tue, 30 Sep 2025 17:24:53 +0800</pubDate>
+      <guid>https://Xloading-919.github.io/zh/posts/tech/aqs%E6%BC%AB%E8%B0%88/</guid>
+      <description>锁实现</description>
+    </item>
+  </channel>
+</rss>

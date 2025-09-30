@@ -2,19 +2,10 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://Xloading-919.github.io/zh/posts/tech/</loc>
-    <lastmod>2025-09-30T17:24:53+08:00</lastmod>
-  </url><url>
     <loc>https://Xloading-919.github.io/zh/posts/tech/aqs%E6%BC%AB%E8%B0%88/</loc>
     <lastmod>2025-09-30T17:24:53+08:00</lastmod>
   </url><url>
-    <loc>https://Xloading-919.github.io/zh/categories/</loc>
-    <lastmod>2025-09-30T17:24:53+08:00</lastmod>
-  </url><url>
     <loc>https://Xloading-919.github.io/zh/tags/java/</loc>
-    <lastmod>2025-09-30T17:24:53+08:00</lastmod>
-  </url><url>
-    <loc>https://Xloading-919.github.io/zh/posts/</loc>
     <lastmod>2025-09-30T17:24:53+08:00</lastmod>
   </url><url>
     <loc>https://Xloading-919.github.io/zh/tags/</loc>
@@ -23,10 +14,10 @@
     <loc>https://Xloading-919.github.io/zh/</loc>
     <lastmod>2025-09-30T17:24:53+08:00</lastmod>
   </url><url>
-    <loc>https://Xloading-919.github.io/zh/categories/%E6%8A%80%E6%9C%AF/</loc>
+    <loc>https://Xloading-919.github.io/zh/posts/tech/</loc>
     <lastmod>2025-09-30T17:24:53+08:00</lastmod>
   </url><url>
-    <loc>https://Xloading-919.github.io/zh/tags/%E6%BA%90%E7%A0%81/</loc>
+    <loc>https://Xloading-919.github.io/zh/posts/</loc>
     <lastmod>2025-09-30T17:24:53+08:00</lastmod>
   </url><url>
     <loc>https://Xloading-919.github.io/zh/about/</loc>
@@ -35,7 +26,5 @@
     <loc>https://Xloading-919.github.io/zh/archives/</loc>
   </url><url>
     <loc>https://Xloading-919.github.io/zh/search/</loc>
-  </url><url>
-    <loc>https://Xloading-919.github.io/zh/series/</loc>
   </url>
 </urlset>

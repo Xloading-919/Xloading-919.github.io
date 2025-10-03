@@ -4,10 +4,23 @@
     <title>Xloading&#39;s Blog</title>
     <link>https://Xloading-919.github.io/zh/</link>
     <description>Recent content on Xloading&#39;s Blog</description>
-    <generator>Hugo -- 0.150.1</generator>
+    <generator>Hugo -- 0.151.0</generator>
     <language>zh</language>
-    <lastBuildDate>Tue, 30 Sep 2025 23:09:40 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 03 Oct 2025 15:53:17 +0800</lastBuildDate>
     <atom:link href="https://Xloading-919.github.io/zh/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>多线程基础</title>
+      <link>https://Xloading-919.github.io/zh/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/</link>
+      <pubDate>Fri, 03 Oct 2025 15:53:17 +0800</pubDate>
+      <guid>https://Xloading-919.github.io/zh/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/</guid>
+      <description>&lt;h2 id=&#34;并行与并发&#34;&gt;并行与并发&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;并行，是多核CPU上的多任务处理，是同一时间同时执行&lt;/li&gt;
+&lt;li&gt;并发，是单核CPU上的多任务处理，是同一个时间段内交替执行，其实是通过时间片轮转实现&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;进程线程协程&#34;&gt;进程、线程、协程&lt;/h2&gt;
+&lt;p&gt;这是三种并发执行单元：&lt;/p&gt;</description>
+    </item>
     <item>
       <title>IO</title>
       <link>https://Xloading-919.github.io/zh/io/</link>

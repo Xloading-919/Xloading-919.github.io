@@ -13,10 +13,33 @@
       <link>https://Xloading-919.github.io/zh/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/</link>
       <pubDate>Fri, 03 Oct 2025 15:53:17 +0800</pubDate>
       <guid>https://Xloading-919.github.io/zh/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/</guid>
-      <description>&lt;h2 id=&#34;并行与并发&#34;&gt;并行与并发&lt;/h2&gt;
+      <description>&lt;pre&gt;&lt;code&gt;## 为什么要多线程
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;多线程可以：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;充分利用多核CPU的处理能力，可以让程序并行执行，提高吞吐量。&lt;/li&gt;
+&lt;li&gt;提升资源的利用率，一个线程在等待IO的时候，CPU可以调度其他线程继续工作。&lt;/li&gt;
+&lt;li&gt;提升程序的相应速度，可以把耗时的IO操作放到后台线程处理，主线程继续响应用户。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;并行与并发&#34;&gt;并行与并发&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;并行，是多核CPU上的多任务处理，是同一时间同时执行&lt;/li&gt;
 &lt;li&gt;并发，是单核CPU上的多任务处理，是同一个时间段内交替执行，其实是通过时间片轮转实现&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;互斥与同步&#34;&gt;互斥与同步&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;互斥是线程间要抢占资源，就是说保证一个线程在临界区执行时，其他线程应该被阻止进入临界区&lt;/li&gt;
+&lt;li&gt;同步是线程之间需要进行合作，并发的线程在一些任务上需要相互等待与互通消息，按照一定顺序执行&lt;/li&gt;
+&lt;li&gt;通过锁或者信号量机制实现。
+&lt;ol&gt;
+&lt;li&gt;信号量：
+&lt;ol&gt;
+&lt;li&gt;p操作：进入临界区前，将资源数量减1，可能阻塞&lt;/li&gt;
+&lt;li&gt;v操作：离开临界区后，将资源数量加1，不会阻塞&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;进程线程协程&#34;&gt;进程、线程、协程&lt;/h2&gt;
 &lt;p&gt;这是三种并发执行单元：&lt;/p&gt;</description>

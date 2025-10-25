@@ -4,10 +4,100 @@
     <title>Xloading&#39;s Blog</title>
     <link>https://Xloading-919.github.io/zh/</link>
     <description>Recent content on Xloading&#39;s Blog</description>
-    <generator>Hugo -- 0.151.0</generator>
+    <generator>Hugo -- 0.152.2</generator>
     <language>zh</language>
-    <lastBuildDate>Thu, 09 Oct 2025 15:22:50 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 15 Oct 2025 16:43:17 +0800</lastBuildDate>
     <atom:link href="https://Xloading-919.github.io/zh/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Systemctl命令简记</title>
+      <link>https://Xloading-919.github.io/zh/systemctl%E5%91%BD%E4%BB%A4%E7%AE%80%E8%AE%B0/</link>
+      <pubDate>Wed, 15 Oct 2025 16:43:17 +0800</pubDate>
+      <guid>https://Xloading-919.github.io/zh/systemctl%E5%91%BD%E4%BB%A4%E7%AE%80%E8%AE%B0/</guid>
+      <description>&lt;p&gt;&lt;code&gt;systemctl&lt;/code&gt; 是 &lt;strong&gt;systemd 的核心控制命令&lt;/strong&gt;，用于管理系统服务、单元（unit）、启动目标、设备、挂载点等。&lt;/p&gt;
+&lt;h2 id=&#34;-一基本命令分类总览&#34;&gt;🧩 一、基本命令分类总览&lt;/h2&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;类别&lt;/th&gt;
+          &lt;th&gt;常用命令&lt;/th&gt;
+          &lt;th&gt;作用&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;服务管理&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;start&lt;/code&gt; / &lt;code&gt;stop&lt;/code&gt; / &lt;code&gt;restart&lt;/code&gt; / &lt;code&gt;reload&lt;/code&gt; / &lt;code&gt;status&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;控制服务运行状态&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;开机自启&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;enable&lt;/code&gt; / &lt;code&gt;disable&lt;/code&gt; / &lt;code&gt;is-enabled&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;控制是否随系统启动&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;系统状态&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;list-units&lt;/code&gt; / &lt;code&gt;list-unit-files&lt;/code&gt; / &lt;code&gt;is-active&lt;/code&gt; / &lt;code&gt;is-failed&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;查看单元运行状态&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;系统控制&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;reboot&lt;/code&gt; / &lt;code&gt;poweroff&lt;/code&gt; / &lt;code&gt;halt&lt;/code&gt; / &lt;code&gt;suspend&lt;/code&gt; / &lt;code&gt;default&lt;/code&gt; / &lt;code&gt;isolate&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;控制系统运行级别&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;配置管理&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;daemon-reload&lt;/code&gt; / &lt;code&gt;edit&lt;/code&gt; / &lt;code&gt;cat&lt;/code&gt; / &lt;code&gt;show&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;刷新或查看 unit 配置&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;日志与诊断&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;list-timers&lt;/code&gt; / &lt;code&gt;show&lt;/code&gt; / &lt;code&gt;status&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;查看定时器与服务详情&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-二服务管理类命令最常用&#34;&gt;⚙️ 二、服务管理类命令（最常用）&lt;/h2&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;命令&lt;/th&gt;
+          &lt;th&gt;示例&lt;/th&gt;
+          &lt;th&gt;说明&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;start&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;systemctl start nginx&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;启动服务&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;stop&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;systemctl stop nginx&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;停止服务&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;restart&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;systemctl restart nginx&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;重启服务&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;reload&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;systemctl reload nginx&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;重新加载配置，不中断服务（支持的服务才行）&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;status&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;systemctl status nginx&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;查看服务运行状态&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;💡 提示：&lt;br&gt;
+可以加 &lt;code&gt;-l&lt;/code&gt; 显示完整日志，如：&lt;code&gt;systemctl status nginx -l&lt;/code&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>十大排序算法总结</title>
       <link>https://Xloading-919.github.io/zh/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93/</link>
@@ -138,7 +228,8 @@
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id=&#34;分类&#34;&gt;分类&lt;/h2&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;../../../static/img/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%88%86%E7%B1%BB.png&#34;&gt;&lt;/p&gt;</description>
+&lt;!-- 推荐：如果图片放在 `static/img`，请在内容中使用网站根路径引用，构建后会位于网站根的 `/img/` 下 --&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://Xloading-919.github.io/zh/%E5%8D%81%E5%A4%A7%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93/img/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%88%86%E7%B1%BB.png&#34;&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>多线程基础</title>

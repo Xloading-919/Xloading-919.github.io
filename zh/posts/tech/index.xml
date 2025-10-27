@@ -121,7 +121,6 @@
           &lt;th&gt;空间复杂度&lt;/th&gt;
           &lt;th&gt;排序方式&lt;/th&gt;
           &lt;th&gt;稳定性&lt;/th&gt;
-          &lt;th&gt;&lt;/th&gt;
       &lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
@@ -133,7 +132,6 @@
           &lt;td&gt;$O(1)$&lt;/td&gt;
           &lt;td&gt;内部排序&lt;/td&gt;
           &lt;td&gt;稳定&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;选择排序&lt;/td&gt;
@@ -143,7 +141,6 @@
           &lt;td&gt;$O(1)$&lt;/td&gt;
           &lt;td&gt;内部排序&lt;/td&gt;
           &lt;td&gt;不稳定&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;插入排序&lt;/td&gt;
@@ -153,7 +150,6 @@
           &lt;td&gt;$O(1)$&lt;/td&gt;
           &lt;td&gt;内部排序&lt;/td&gt;
           &lt;td&gt;稳定&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;希尔排序&lt;/td&gt;
@@ -163,7 +159,6 @@
           &lt;td&gt;$O(1)$&lt;/td&gt;
           &lt;td&gt;内部排序&lt;/td&gt;
           &lt;td&gt;不稳定&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;归并排序&lt;/td&gt;
@@ -173,7 +168,6 @@
           &lt;td&gt;$O(n)$&lt;/td&gt;
           &lt;td&gt;外部排序&lt;/td&gt;
           &lt;td&gt;稳定&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;快速排序&lt;/td&gt;
@@ -183,7 +177,6 @@
           &lt;td&gt;$O(\log n)$&lt;/td&gt;
           &lt;td&gt;内部排序&lt;/td&gt;
           &lt;td&gt;不稳定&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;堆排序&lt;/td&gt;
@@ -193,7 +186,6 @@
           &lt;td&gt;$O(1)$&lt;/td&gt;
           &lt;td&gt;内部排序&lt;/td&gt;
           &lt;td&gt;不稳定&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;计数排序&lt;/td&gt;
@@ -203,7 +195,6 @@
           &lt;td&gt;$O(k)$&lt;/td&gt;
           &lt;td&gt;外部排序&lt;/td&gt;
           &lt;td&gt;稳定&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;桶排序&lt;/td&gt;
@@ -213,7 +204,6 @@
           &lt;td&gt;$O(n + k)$&lt;/td&gt;
           &lt;td&gt;外部排序&lt;/td&gt;
           &lt;td&gt;稳定&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;基数排序&lt;/td&gt;
@@ -223,12 +213,11 @@
           &lt;td&gt;$O(n + k)$&lt;/td&gt;
           &lt;td&gt;外部排序&lt;/td&gt;
           &lt;td&gt;稳定&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id=&#34;分类&#34;&gt;分类&lt;/h2&gt;
-&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E5%88%86%E7%B1%BB.png&#34;&gt;&lt;/p&gt;</description>
+&lt;center&gt;&lt;img src=&#34;img/排序算法分类.png&#34; width=&#34;60%&#34; /&gt;&lt;/center&gt;</description>
     </item>
     <item>
       <title>多线程基础</title>

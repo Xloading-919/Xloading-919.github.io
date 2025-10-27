@@ -6,7 +6,22 @@
     <description>Recent content in 力扣刷题 on Xloading&#39;s Blog</description>
     <generator>Hugo -- 0.152.2</generator>
     <language>zh</language>
-    <lastBuildDate></lastBuildDate>
+    <lastBuildDate>Mon, 27 Oct 2025 15:25:24 +0800</lastBuildDate>
     <atom:link href="https://Xloading-919.github.io/zh/posts/leetcode/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>哈希表</title>
+      <link>https://Xloading-919.github.io/zh/%E5%93%88%E5%B8%8C%E8%A1%A8/</link>
+      <pubDate>Mon, 27 Oct 2025 15:25:24 +0800</pubDate>
+      <guid>https://Xloading-919.github.io/zh/%E5%93%88%E5%B8%8C%E8%A1%A8/</guid>
+      <description>&lt;h2 id=&#34;3-无重复字符的最长子串&#34;&gt;&lt;a href=&#34;https://leetcode.cn/problems/longest-substring-without-repeating-characters/&#34;&gt;3. 无重复字符的最长子串&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;要求：要找到最长的子串的长度，且要求不包含重复字符&lt;/p&gt;
+&lt;h3 id=&#34;思路&#34;&gt;思路&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;使用滑动窗口双指针，右指针遍历，左指针控制左边界，用于计算最大长度&lt;/li&gt;
+&lt;li&gt;使用map记录已经出现过的元素和其位置。初始化窗口边界，右边界向后遍历并记录达到的最长窗口长度，当遇到重复元素，则&lt;strong&gt;把左边界移动到重复元素上一次出现位置之后&lt;/strong&gt;（即跳过旧的重复元素）&lt;/li&gt;
+&lt;li&gt;注意窗口内出现重复只可能有一个重复，所以如果l提前右移过且已经移动到当前重复元素的后边，l不加1&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;代码：&lt;/p&gt;</description>
+    </item>
   </channel>
 </rss>

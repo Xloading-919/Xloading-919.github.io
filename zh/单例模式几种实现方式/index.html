@@ -1,0 +1,523 @@
+<!doctype html><html lang=zh dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>单例模式几种实现方式 | Xloading's Blog</title><meta name=keywords content><meta name=description content="单例模式是什么
+
+单例模式是创建型设计模式的一种，保证一个类只有一个实例，并提供一个全局访问点。
+常用于全局共享资源，比如配置管理、连接池、日志对象。
+
+作用
+
+可以节省资源，避免频繁创建销毁对象，占用内存或系统资源
+提供统一的访问入口，方便管理
+保证全局只有一个对象，避免状态不一致
+
+实现方式
+饿汉式（类加载时就创建）
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+
+public class Singleton {
+	// 这里要用final，初始化后不再修改
+	private static final Singleton instance = new Singleton();
+	private Singleton () {} // 设置私有访问权限的构造方法，防止外部调用
+	// 设置静态方法，提供全局类名访问方式
+	public static Singleton getInstance() {
+        return instance;
+	}
+}
+
+
+
+优点：线程安全（JVM保证类加载时只执行一次）
+缺点：类加载就创建，可能浪费资源
+
+懒汉式（第一次用再加载）
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+
+
+public class Singleton {
+    private static Singleton instance;
+    private Singleton () {}
+    // 这里需要加锁，每次只允许第一个创建或者获取
+    public static synchronized Singleton getInstace () {
+        if (intstance == null) { // 判断是否已经存在了
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+
+
+
+优点：延迟加载
+缺点：每次加锁，性能差
+
+双重检查锁（DCL）懒汉式
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+
+
+public class Singleton {
+    // volatile 防止指令重排，保证对象初始化完整可见
+    // 比如，A已经进入调用了构造函数，但是还没初始化完成
+    // B这时候去判断instance不为空，但是返回得到的是一个半初始化对象
+    private static volatile Singleton instance;
+    private Singleton () {}
+    public static getInstance() {
+        if (instance == null) { // 第一次检查（避免不必要的同步）
+            synchronized (Singleton.class) { // 锁确保只有一个线程进入初始化段
+                if (instance == null) { // 第二次检查（防止重复创建）
+                    instance = new Singleton();// 创建并赋值
+                }
+            }
+        }
+        return instance; // 返回单例引用
+    }
+}
+
+
+
+优点：兼顾 性能（避免每次都加锁） 与 线程安全（只创建一次）
+缺点：代码略显复杂。
+volatile的两个作用
+
+可见性：一个线程对 instance 的写（赋值）会被其他线程立即看到；没有 volatile，一个线程修改可能对其他线程不可见（在 CPU 缓存中滞留）。
+禁止指令重排（防止“半初始化对象”）：new Singleton() 在字节码/机器指令层面可能被重排序成（分配内存 → 赋值引用 → 调用构造器），若发生这种重排，另一个线程可能在构造器还没执行完时看到 instance != null 并使用一个“尚未完整初始化”的对象。volatile 引入内存栅栏，使得写 instance 不会在对象构造完成之前被发布，从而避免这个问题。
+
+
+
+静态内部类
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+
+
+public class Singleton {
+    private Singleton() {}
+    private static class Holder {
+        // 通过静态内部类中的静态变量初始化实例
+        private static final Singleton instance = new Singleton();
+    }
+    public static Singleton getInstance() {
+        return Holder.instance; // 通过内部类获取
+    }
+}
+
+
+
+第一次调用 getInstance() 方法时，需要使用到Holder.instance，于是JVM 会加载 Holder 类，加载Holder 类时，初始化静态变量，执行new Singleton()，成功创建。
+后续调用getInstance() 时，Holder 已经加载过了，INSTANCE 已存在，直接返回即可。
+为什么可用：类的初始化阶段（<clinit>）是线程安全的，同一个类只会被加载和初始化一次。
+
+枚举实现（最安全）
+
+
+1
+2
+3
+4
+5
+6
+7
+
+
+public enum Singleton {
+    INSTANCE;
+    
+    // 这个方法就是在业务代码中，调用Singleton.INSTANCE获取单例对象后，调用的方法逻辑
+    // 调用时，都是用同一个实例调用的
+    public void doSomething() {}
+}
+
+
+破坏单例
+序列化
+序列化会破坏非枚举单例模式："><meta name=author content="axing"><link rel=canonical href=https://Xloading-919.github.io/zh/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/><link crossorigin=anonymous href=/assets/css/stylesheet.60e9f0b6784df1409ba6f4029a0b1e6323395367cc36407f08f8538034fe128f.css integrity="sha256-YOnwtnhN8UCbpvQCmgseYyM5U2fMNkB/CPhTgDT+Eo8=" rel="preload stylesheet" as=style><link rel=icon href=https://Xloading-919.github.io/img/logo.jpg><link rel=icon type=image/png sizes=16x16 href=https://Xloading-919.github.io/img/logo.jpg><link rel=icon type=image/png sizes=32x32 href=https://Xloading-919.github.io/img/logo.jpg><link rel=apple-touch-icon href=https://Xloading-919.github.io/logo.jpg><link rel=mask-icon href=https://Xloading-919.github.io/logo.jpg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=zh href=https://Xloading-919.github.io/zh/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><html><head><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.1.0/style.css><style>body{font-family:lxgw wenkai,sans-serif;font-family:lxgw wenkai screen,sans-serif}</style></head><body></body></html><meta property="og:url" content="https://Xloading-919.github.io/zh/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/"><meta property="og:site_name" content="Xloading's Blog"><meta property="og:title" content="单例模式几种实现方式"><meta property="og:description" content="单例模式是什么 单例模式是创建型设计模式的一种，保证一个类只有一个实例，并提供一个全局访问点。 常用于全局共享资源，比如配置管理、连接池、日志对象。 作用 可以节省资源，避免频繁创建销毁对象，占用内存或系统资源 提供统一的访问入口，方便管理 保证全局只有一个对象，避免状态不一致 实现方式 饿汉式（类加载时就创建） 1 2 3 4 5 6 7 8 9 public class Singleton { // 这里要用final，初始化后不再修改 private static final Singleton instance = new Singleton(); private Singleton () {} // 设置私有访问权限的构造方法，防止外部调用 // 设置静态方法，提供全局类名访问方式 public static Singleton getInstance() { return instance; } } 优点：线程安全（JVM保证类加载时只执行一次） 缺点：类加载就创建，可能浪费资源 懒汉式（第一次用再加载） 1 2 3 4 5 6 7 8 9 10 11 public class Singleton { private static Singleton instance; private Singleton () {} // 这里需要加锁，每次只允许第一个创建或者获取 public static synchronized Singleton getInstace () { if (intstance == null) { // 判断是否已经存在了 instance = new Singleton(); } return instance; } } 优点：延迟加载 缺点：每次加锁，性能差 双重检查锁（DCL）懒汉式 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 public class Singleton { // volatile 防止指令重排，保证对象初始化完整可见 // 比如，A已经进入调用了构造函数，但是还没初始化完成 // B这时候去判断instance不为空，但是返回得到的是一个半初始化对象 private static volatile Singleton instance; private Singleton () {} public static getInstance() { if (instance == null) { // 第一次检查（避免不必要的同步） synchronized (Singleton.class) { // 锁确保只有一个线程进入初始化段 if (instance == null) { // 第二次检查（防止重复创建） instance = new Singleton();// 创建并赋值 } } } return instance; // 返回单例引用 } } 优点：兼顾 性能（避免每次都加锁） 与 线程安全（只创建一次） 缺点：代码略显复杂。 volatile的两个作用 可见性：一个线程对 instance 的写（赋值）会被其他线程立即看到；没有 volatile，一个线程修改可能对其他线程不可见（在 CPU 缓存中滞留）。 禁止指令重排（防止“半初始化对象”）：new Singleton() 在字节码/机器指令层面可能被重排序成（分配内存 → 赋值引用 → 调用构造器），若发生这种重排，另一个线程可能在构造器还没执行完时看到 instance != null 并使用一个“尚未完整初始化”的对象。volatile 引入内存栅栏，使得写 instance 不会在对象构造完成之前被发布，从而避免这个问题。 静态内部类 1 2 3 4 5 6 7 8 9 10 public class Singleton { private Singleton() {} private static class Holder { // 通过静态内部类中的静态变量初始化实例 private static final Singleton instance = new Singleton(); } public static Singleton getInstance() { return Holder.instance; // 通过内部类获取 } } 第一次调用 getInstance() 方法时，需要使用到Holder.instance，于是JVM 会加载 Holder 类，加载Holder 类时，初始化静态变量，执行new Singleton()，成功创建。 后续调用getInstance() 时，Holder 已经加载过了，INSTANCE 已存在，直接返回即可。 为什么可用：类的初始化阶段（<clinit>）是线程安全的，同一个类只会被加载和初始化一次。 枚举实现（最安全） 1 2 3 4 5 6 7 public enum Singleton { INSTANCE; // 这个方法就是在业务代码中，调用Singleton.INSTANCE获取单例对象后，调用的方法逻辑 // 调用时，都是用同一个实例调用的 public void doSomething() {} } 破坏单例 序列化 序列化会破坏非枚举单例模式："><meta property="og:locale" content="zh"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-10-28T16:17:23+08:00"><meta property="article:modified_time" content="2025-10-28T16:17:23+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="单例模式几种实现方式"><meta name=twitter:description content="单例模式是什么
+
+单例模式是创建型设计模式的一种，保证一个类只有一个实例，并提供一个全局访问点。
+常用于全局共享资源，比如配置管理、连接池、日志对象。
+
+作用
+
+可以节省资源，避免频繁创建销毁对象，占用内存或系统资源
+提供统一的访问入口，方便管理
+保证全局只有一个对象，避免状态不一致
+
+实现方式
+饿汉式（类加载时就创建）
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+
+public class Singleton {
+	// 这里要用final，初始化后不再修改
+	private static final Singleton instance = new Singleton();
+	private Singleton () {} // 设置私有访问权限的构造方法，防止外部调用
+	// 设置静态方法，提供全局类名访问方式
+	public static Singleton getInstance() {
+        return instance;
+	}
+}
+
+
+
+优点：线程安全（JVM保证类加载时只执行一次）
+缺点：类加载就创建，可能浪费资源
+
+懒汉式（第一次用再加载）
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+
+
+public class Singleton {
+    private static Singleton instance;
+    private Singleton () {}
+    // 这里需要加锁，每次只允许第一个创建或者获取
+    public static synchronized Singleton getInstace () {
+        if (intstance == null) { // 判断是否已经存在了
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+
+
+
+优点：延迟加载
+缺点：每次加锁，性能差
+
+双重检查锁（DCL）懒汉式
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+
+
+public class Singleton {
+    // volatile 防止指令重排，保证对象初始化完整可见
+    // 比如，A已经进入调用了构造函数，但是还没初始化完成
+    // B这时候去判断instance不为空，但是返回得到的是一个半初始化对象
+    private static volatile Singleton instance;
+    private Singleton () {}
+    public static getInstance() {
+        if (instance == null) { // 第一次检查（避免不必要的同步）
+            synchronized (Singleton.class) { // 锁确保只有一个线程进入初始化段
+                if (instance == null) { // 第二次检查（防止重复创建）
+                    instance = new Singleton();// 创建并赋值
+                }
+            }
+        }
+        return instance; // 返回单例引用
+    }
+}
+
+
+
+优点：兼顾 性能（避免每次都加锁） 与 线程安全（只创建一次）
+缺点：代码略显复杂。
+volatile的两个作用
+
+可见性：一个线程对 instance 的写（赋值）会被其他线程立即看到；没有 volatile，一个线程修改可能对其他线程不可见（在 CPU 缓存中滞留）。
+禁止指令重排（防止“半初始化对象”）：new Singleton() 在字节码/机器指令层面可能被重排序成（分配内存 → 赋值引用 → 调用构造器），若发生这种重排，另一个线程可能在构造器还没执行完时看到 instance != null 并使用一个“尚未完整初始化”的对象。volatile 引入内存栅栏，使得写 instance 不会在对象构造完成之前被发布，从而避免这个问题。
+
+
+
+静态内部类
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+
+
+public class Singleton {
+    private Singleton() {}
+    private static class Holder {
+        // 通过静态内部类中的静态变量初始化实例
+        private static final Singleton instance = new Singleton();
+    }
+    public static Singleton getInstance() {
+        return Holder.instance; // 通过内部类获取
+    }
+}
+
+
+
+第一次调用 getInstance() 方法时，需要使用到Holder.instance，于是JVM 会加载 Holder 类，加载Holder 类时，初始化静态变量，执行new Singleton()，成功创建。
+后续调用getInstance() 时，Holder 已经加载过了，INSTANCE 已存在，直接返回即可。
+为什么可用：类的初始化阶段（<clinit>）是线程安全的，同一个类只会被加载和初始化一次。
+
+枚举实现（最安全）
+
+
+1
+2
+3
+4
+5
+6
+7
+
+
+public enum Singleton {
+    INSTANCE;
+    
+    // 这个方法就是在业务代码中，调用Singleton.INSTANCE获取单例对象后，调用的方法逻辑
+    // 调用时，都是用同一个实例调用的
+    public void doSomething() {}
+}
+
+
+破坏单例
+序列化
+序列化会破坏非枚举单例模式："><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"所有文章","item":"https://Xloading-919.github.io/zh/posts/"},{"@type":"ListItem","position":2,"name":"技术","item":"https://Xloading-919.github.io/zh/posts/tech/"},{"@type":"ListItem","position":3,"name":"单例模式几种实现方式","item":"https://Xloading-919.github.io/zh/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"单例模式几种实现方式","name":"单例模式几种实现方式","description":"单例模式是什么 单例模式是创建型设计模式的一种，保证一个类只有一个实例，并提供一个全局访问点。 常用于全局共享资源，比如配置管理、连接池、日志对象。 作用 可以节省资源，避免频繁创建销毁对象，占用内存或系统资源 提供统一的访问入口，方便管理 保证全局只有一个对象，避免状态不一致 实现方式 饿汉式（类加载时就创建） 1 2 3 4 5 6 7 8 9 public class Singleton { // 这里要用final，初始化后不再修改 private static final Singleton instance = new Singleton(); private Singleton () {} // 设置私有访问权限的构造方法，防止外部调用 // 设置静态方法，提供全局类名访问方式 public static Singleton getInstance() { return instance; } } 优点：线程安全（JVM保证类加载时只执行一次） 缺点：类加载就创建，可能浪费资源 懒汉式（第一次用再加载） 1 2 3 4 5 6 7 8 9 10 11 public class Singleton { private static Singleton instance; private Singleton () {} // 这里需要加锁，每次只允许第一个创建或者获取 public static synchronized Singleton getInstace () { if (intstance == null) { // 判断是否已经存在了 instance = new Singleton(); } return instance; } } 优点：延迟加载 缺点：每次加锁，性能差 双重检查锁（DCL）懒汉式 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 public class Singleton { // volatile 防止指令重排，保证对象初始化完整可见 // 比如，A已经进入调用了构造函数，但是还没初始化完成 // B这时候去判断instance不为空，但是返回得到的是一个半初始化对象 private static volatile Singleton instance; private Singleton () {} public static getInstance() { if (instance == null) { // 第一次检查（避免不必要的同步） synchronized (Singleton.class) { // 锁确保只有一个线程进入初始化段 if (instance == null) { // 第二次检查（防止重复创建） instance = new Singleton();// 创建并赋值 } } } return instance; // 返回单例引用 } } 优点：兼顾 性能（避免每次都加锁） 与 线程安全（只创建一次） 缺点：代码略显复杂。 volatile的两个作用 可见性：一个线程对 instance 的写（赋值）会被其他线程立即看到；没有 volatile，一个线程修改可能对其他线程不可见（在 CPU 缓存中滞留）。 禁止指令重排（防止“半初始化对象”）：new Singleton() 在字节码/机器指令层面可能被重排序成（分配内存 → 赋值引用 → 调用构造器），若发生这种重排，另一个线程可能在构造器还没执行完时看到 instance != null 并使用一个“尚未完整初始化”的对象。volatile 引入内存栅栏，使得写 instance 不会在对象构造完成之前被发布，从而避免这个问题。 静态内部类 1 2 3 4 5 6 7 8 9 10 public class Singleton { private Singleton() {} private static class Holder { // 通过静态内部类中的静态变量初始化实例 private static final Singleton instance = new Singleton(); } public static Singleton getInstance() { return Holder.instance; // 通过内部类获取 } } 第一次调用 getInstance() 方法时，需要使用到Holder.instance，于是JVM 会加载 Holder 类，加载Holder 类时，初始化静态变量，执行new Singleton()，成功创建。 后续调用getInstance() 时，Holder 已经加载过了，INSTANCE 已存在，直接返回即可。 为什么可用：类的初始化阶段（\u0026lt;clinit\u0026gt;）是线程安全的，同一个类只会被加载和初始化一次。 枚举实现（最安全） 1 2 3 4 5 6 7 public enum Singleton { INSTANCE; // 这个方法就是在业务代码中，调用Singleton.INSTANCE获取单例对象后，调用的方法逻辑 // 调用时，都是用同一个实例调用的 public void doSomething() {} } 破坏单例 序列化 序列化会破坏非枚举单例模式：\n","keywords":[],"articleBody":"单例模式是什么 单例模式是创建型设计模式的一种，保证一个类只有一个实例，并提供一个全局访问点。 常用于全局共享资源，比如配置管理、连接池、日志对象。 作用 可以节省资源，避免频繁创建销毁对象，占用内存或系统资源 提供统一的访问入口，方便管理 保证全局只有一个对象，避免状态不一致 实现方式 饿汉式（类加载时就创建） 1 2 3 4 5 6 7 8 9 public class Singleton { // 这里要用final，初始化后不再修改 private static final Singleton instance = new Singleton(); private Singleton () {} // 设置私有访问权限的构造方法，防止外部调用 // 设置静态方法，提供全局类名访问方式 public static Singleton getInstance() { return instance; } } 优点：线程安全（JVM保证类加载时只执行一次） 缺点：类加载就创建，可能浪费资源 懒汉式（第一次用再加载） 1 2 3 4 5 6 7 8 9 10 11 public class Singleton { private static Singleton instance; private Singleton () {} // 这里需要加锁，每次只允许第一个创建或者获取 public static synchronized Singleton getInstace () { if (intstance == null) { // 判断是否已经存在了 instance = new Singleton(); } return instance; } } 优点：延迟加载 缺点：每次加锁，性能差 双重检查锁（DCL）懒汉式 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 public class Singleton { // volatile 防止指令重排，保证对象初始化完整可见 // 比如，A已经进入调用了构造函数，但是还没初始化完成 // B这时候去判断instance不为空，但是返回得到的是一个半初始化对象 private static volatile Singleton instance; private Singleton () {} public static getInstance() { if (instance == null) { // 第一次检查（避免不必要的同步） synchronized (Singleton.class) { // 锁确保只有一个线程进入初始化段 if (instance == null) { // 第二次检查（防止重复创建） instance = new Singleton();// 创建并赋值 } } } return instance; // 返回单例引用 } } 优点：兼顾 性能（避免每次都加锁） 与 线程安全（只创建一次） 缺点：代码略显复杂。 volatile的两个作用 可见性：一个线程对 instance 的写（赋值）会被其他线程立即看到；没有 volatile，一个线程修改可能对其他线程不可见（在 CPU 缓存中滞留）。 禁止指令重排（防止“半初始化对象”）：new Singleton() 在字节码/机器指令层面可能被重排序成（分配内存 → 赋值引用 → 调用构造器），若发生这种重排，另一个线程可能在构造器还没执行完时看到 instance != null 并使用一个“尚未完整初始化”的对象。volatile 引入内存栅栏，使得写 instance 不会在对象构造完成之前被发布，从而避免这个问题。 静态内部类 1 2 3 4 5 6 7 8 9 10 public class Singleton { private Singleton() {} private static class Holder { // 通过静态内部类中的静态变量初始化实例 private static final Singleton instance = new Singleton(); } public static Singleton getInstance() { return Holder.instance; // 通过内部类获取 } } 第一次调用 getInstance() 方法时，需要使用到Holder.instance，于是JVM 会加载 Holder 类，加载Holder 类时，初始化静态变量，执行new Singleton()，成功创建。 后续调用getInstance() 时，Holder 已经加载过了，INSTANCE 已存在，直接返回即可。 为什么可用：类的初始化阶段（）是线程安全的，同一个类只会被加载和初始化一次。 枚举实现（最安全） 1 2 3 4 5 6 7 public enum Singleton { INSTANCE; // 这个方法就是在业务代码中，调用Singleton.INSTANCE获取单例对象后，调用的方法逻辑 // 调用时，都是用同一个实例调用的 public void doSomething() {} } 破坏单例 序列化 序列化会破坏非枚举单例模式：\n1 2 3 4 5 6 7 8 9 10 11 12 13 Singleton s1 = Singleton.getInstance(); // 序列化到文件 ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(\"a.obj)); oos.writeObject(s1); oos.close(); // 从文件反序列化 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(\"a.obj\")); Singleton s2 = (Singleton) ois.readObject(); ois.close(); System.out.println(s1 == s2); // false 输出false，即反序列化得到的对象时一个新的实例，破坏了单例。因为Java反序列化机制通过反射创建一个新对象，不会调用构造方法， 也不会执行getInstance()。所以每次readObject()都会产生一个新的对象副本。\n解决方案 通过实现readResolve()可以解决，在类中添加这个方法：\n1 2 3 private Object readResolve() throws ObjectStreamException { return instance; } 当 JVM 反序列化时，会优先调用 readResolve()， 把返回的对象当作反序列化结果返回，从而保证返回的仍然是原有的单例实例。\n反射调用私有构造方法 正常情况下，因为单例类中设置了构造方法的访问修饰符是private，不能再外部直接访问。但是反射可以绕过权限检查：\n1 2 3 4 5 6 7 8 Constructor\u003cSingleton\u003e c = Singleton.class.getDeclaredConstructor(); c.setAccessible(true); // 重要：设置可访问，关闭访问检查 Singleton s1 = Singleton.getInstance(); Singleton s2 = c.newInstance(); // 调用无参构造器创建此 Class 对象所表示的类的一个新实例。 System.out.println(s1 == s2); // false 输出是false，说明反射调用私有构造器创建了新对象实例，破坏单例唯一性。\n使用枚举类解决 使用枚举类实现单例模式，可以防止两种破坏。\n枚举反序列化时不会new新对象，而是直接用类加载时创建的那个枚举实例。 枚举的构造器是由JVM特殊处理的，在类加载时自动调用，反射不能通过构造器类（Constructor.newInstance()）调用枚举的构造器，也就是不能通过反射创建枚举实例。 ","wordCount":"1836","inLanguage":"zh","datePublished":"2025-10-28T16:17:23+08:00","dateModified":"2025-10-28T16:17:23+08:00","author":[{"@type":"Person","name":"axing"}],"mainEntityOfPage":{"@type":"WebPage","@id":"https://Xloading-919.github.io/zh/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/"},"publisher":{"@type":"Organization","name":"Xloading's Blog","logo":{"@type":"ImageObject","url":"https://Xloading-919.github.io/img/logo.jpg"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://Xloading-919.github.io/zh/ accesskey=h title="Xloading's Blog (Alt + H)">Xloading's Blog</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://Xloading-919.github.io/zh/ title=主页><span>主页</span></a></li><li><a href=https://Xloading-919.github.io/zh/posts title=文章><span>文章</span></a></li><li><a href=https://Xloading-919.github.io/zh/archives/ title=时间轴><span>时间轴</span></a></li><li><a href=https://Xloading-919.github.io/zh/tags title=标签><span>标签</span></a></li><li><a href=https://Xloading-919.github.io/zh/search title="搜索 (Alt + /)" accesskey=/><span>搜索</span></a></li><li><a href=https://Xloading-919.github.io/zh/about title=关于><span>关于</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://Xloading-919.github.io/zh/>主页</a>&nbsp;»&nbsp;<a href=https://Xloading-919.github.io/zh/posts/>所有文章</a>&nbsp;»&nbsp;<a href=https://Xloading-919.github.io/zh/posts/tech/>技术</a></div><h1 class="post-title entry-hint-parent">单例模式几种实现方式</h1><div class=post-meta><span title='2025-10-28 16:17:23 +0800 +0800'>2025-10-28</span>&nbsp;·&nbsp;<span>4 分钟</span>&nbsp;·&nbsp;<span>axing</span></div></header><div class=toc><details open><summary accesskey=c title="(Alt + C)"><span class=details>目录</span></summary><div class=inner><ul><li><a href=#%e5%8d%95%e4%be%8b%e6%a8%a1%e5%bc%8f%e6%98%af%e4%bb%80%e4%b9%88 aria-label=单例模式是什么>单例模式是什么</a></li><li><a href=#%e4%bd%9c%e7%94%a8 aria-label=作用>作用</a></li><li><a href=#%e5%ae%9e%e7%8e%b0%e6%96%b9%e5%bc%8f aria-label=实现方式>实现方式</a><ul><li><a href=#%e9%a5%bf%e6%b1%89%e5%bc%8f%e7%b1%bb%e5%8a%a0%e8%bd%bd%e6%97%b6%e5%b0%b1%e5%88%9b%e5%bb%ba aria-label=饿汉式（类加载时就创建）>饿汉式（类加载时就创建）</a></li><li><a href=#%e6%87%92%e6%b1%89%e5%bc%8f%e7%ac%ac%e4%b8%80%e6%ac%a1%e7%94%a8%e5%86%8d%e5%8a%a0%e8%bd%bd aria-label=懒汉式（第一次用再加载）>懒汉式（第一次用再加载）</a></li><li><a href=#%e5%8f%8c%e9%87%8d%e6%a3%80%e6%9f%a5%e9%94%81dcl%e6%87%92%e6%b1%89%e5%bc%8f aria-label=双重检查锁（DCL）懒汉式>双重检查锁（DCL）懒汉式</a></li><li><a href=#%e9%9d%99%e6%80%81%e5%86%85%e9%83%a8%e7%b1%bb aria-label=静态内部类>静态内部类</a></li><li><a href=#%e6%9e%9a%e4%b8%be%e5%ae%9e%e7%8e%b0%e6%9c%80%e5%ae%89%e5%85%a8 aria-label=枚举实现（最安全）>枚举实现（最安全）</a></li></ul></li><li><a href=#%e7%a0%b4%e5%9d%8f%e5%8d%95%e4%be%8b aria-label=破坏单例>破坏单例</a><ul><li><a href=#%e5%ba%8f%e5%88%97%e5%8c%96 aria-label=序列化>序列化</a><ul><li><a href=#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88 aria-label=解决方案>解决方案</a></li></ul></li><li><a href=#%e5%8f%8d%e5%b0%84%e8%b0%83%e7%94%a8%e7%a7%81%e6%9c%89%e6%9e%84%e9%80%a0%e6%96%b9%e6%b3%95 aria-label=反射调用私有构造方法>反射调用私有构造方法</a></li><li><a href=#%e4%bd%bf%e7%94%a8%e6%9e%9a%e4%b8%be%e7%b1%bb%e8%a7%a3%e5%86%b3 aria-label=使用枚举类解决>使用枚举类解决</a></li></ul></li></ul></div></details></div><div class=post-content><h2 id=单例模式是什么>单例模式是什么<a hidden class=anchor aria-hidden=true href=#单例模式是什么>#</a></h2><ol><li>单例模式是创建型设计模式的一种，保证<strong>一个类只有一个实例</strong>，并提供一个<strong>全局访问点</strong>。</li><li>常用于全局共享资源，比如配置管理、连接池、日志对象。</li></ol><h2 id=作用>作用<a hidden class=anchor aria-hidden=true href=#作用>#</a></h2><ol><li>可以节省资源，避免频繁创建销毁对象，占用内存或系统资源</li><li>提供统一的访问入口，方便管理</li><li>保证全局只有一个对象，避免状态不一致</li></ol><h2 id=实现方式>实现方式<a hidden class=anchor aria-hidden=true href=#实现方式>#</a></h2><h3 id=饿汉式类加载时就创建>饿汉式（类加载时就创建）<a hidden class=anchor aria-hidden=true href=#饿汉式类加载时就创建>#</a></h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>Singleton</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=c1>// 这里要用final，初始化后不再修改</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=n>Singleton</span><span class=w> </span><span class=n>instance</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Singleton</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=kd>private</span><span class=w> </span><span class=nf>Singleton</span><span class=w> </span><span class=p>()</span><span class=w> </span><span class=p>{}</span><span class=w> </span><span class=c1>// 设置私有访问权限的构造方法，防止外部调用</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=c1>// 设置静态方法，提供全局类名访问方式</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Singleton</span><span class=w> </span><span class=nf>getInstance</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>instance</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>优点：线程安全（JVM保证类加载时只执行一次）</li><li>缺点：类加载就创建，可能浪费资源</li></ul><h3 id=懒汉式第一次用再加载>懒汉式（第一次用再加载）<a hidden class=anchor aria-hidden=true href=#懒汉式第一次用再加载>#</a></h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>Singleton</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Singleton</span><span class=w> </span><span class=n>instance</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=nf>Singleton</span><span class=w> </span><span class=p>()</span><span class=w> </span><span class=p>{}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 这里需要加锁，每次只允许第一个创建或者获取</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>synchronized</span><span class=w> </span><span class=n>Singleton</span><span class=w> </span><span class=nf>getInstace</span><span class=w> </span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>intstance</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=c1>// 判断是否已经存在了</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>instance</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Singleton</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>instance</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>优点：延迟加载</li><li>缺点：每次加锁，性能差</li></ul><h3 id=双重检查锁dcl懒汉式>双重检查锁（DCL）懒汉式<a hidden class=anchor aria-hidden=true href=#双重检查锁dcl懒汉式>#</a></h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>Singleton</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// volatile 防止指令重排，保证对象初始化完整可见</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 比如，A已经进入调用了构造函数，但是还没初始化完成</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// B这时候去判断instance不为空，但是返回得到的是一个半初始化对象</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>volatile</span><span class=w> </span><span class=n>Singleton</span><span class=w> </span><span class=n>instance</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=nf>Singleton</span><span class=w> </span><span class=p>()</span><span class=w> </span><span class=p>{}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=nf>getInstance</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>instance</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=c1>// 第一次检查（避免不必要的同步）</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kd>synchronized</span><span class=w> </span><span class=p>(</span><span class=n>Singleton</span><span class=p>.</span><span class=na>class</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=c1>// 锁确保只有一个线程进入初始化段</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>instance</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=c1>// 第二次检查（防止重复创建）</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>instance</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Singleton</span><span class=p>();</span><span class=c1>// 创建并赋值</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>instance</span><span class=p>;</span><span class=w> </span><span class=c1>// 返回单例引用</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>优点：兼顾 <strong>性能（避免每次都加锁）</strong> 与 <strong>线程安全（只创建一次）</strong></li><li>缺点：代码略显复杂。</li><li>volatile的两个作用<ol><li>可见性：一个线程对 <code>instance</code> 的写（赋值）会被其他线程立即看到；没有 <code>volatile</code>，一个线程修改可能对其他线程不可见（在 CPU 缓存中滞留）。</li><li>禁止指令重排（防止“半初始化对象”）：<code>new Singleton()</code> 在字节码/机器指令层面可能被重排序成（分配内存 → 赋值引用 → 调用构造器），若发生这种重排，另一个线程可能在构造器还没执行完时看到 <code>instance != null</code> 并使用一个“尚未完整初始化”的对象。<code>volatile</code> 引入内存栅栏，使得写 <code>instance</code> 不会在对象构造完成之前被发布，从而避免这个问题。</li></ol></li></ul><h3 id=静态内部类>静态内部类<a hidden class=anchor aria-hidden=true href=#静态内部类>#</a></h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>Singleton</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=nf>Singleton</span><span class=p>()</span><span class=w> </span><span class=p>{}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>class</span> <span class=nc>Holder</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// 通过静态内部类中的静态变量初始化实例</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=n>Singleton</span><span class=w> </span><span class=n>instance</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Singleton</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Singleton</span><span class=w> </span><span class=nf>getInstance</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>Holder</span><span class=p>.</span><span class=na>instance</span><span class=p>;</span><span class=w> </span><span class=c1>// 通过内部类获取</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>第一次调用 <code>getInstance()</code> 方法时，需要使用到<code>Holder.instance</code>，于是JVM 会加载 <code>Holder</code> 类，加载<code>Holder</code> 类时，初始化静态变量，执行<code>new Singleton()</code>，成功创建。</li><li>后续调用<code>getInstance()</code> 时，<code>Holder</code> 已经加载过了，<code>INSTANCE</code> 已存在，直接返回即可。</li><li>为什么可用：<strong>类的初始化阶段（&lt;clinit>）是线程安全的</strong>，同一个类只会被加载和初始化一次。</li></ul><h3 id=枚举实现最安全>枚举实现（最安全）<a hidden class=anchor aria-hidden=true href=#枚举实现最安全>#</a></h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>enum</span><span class=w> </span><span class=n>Singleton</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>INSTANCE</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 这个方法就是在业务代码中，调用Singleton.INSTANCE获取单例对象后，调用的方法逻辑</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 调用时，都是用同一个实例调用的</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>doSomething</span><span class=p>()</span><span class=w> </span><span class=p>{}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=破坏单例>破坏单例<a hidden class=anchor aria-hidden=true href=#破坏单例>#</a></h2><h3 id=序列化>序列化<a hidden class=anchor aria-hidden=true href=#序列化>#</a></h3><p>序列化会破坏非枚举单例模式：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>Singleton</span><span class=w> </span><span class=n>s1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Singleton</span><span class=p>.</span><span class=na>getInstance</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c1>// 序列化到文件</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>ObjectOutputStream</span><span class=w> </span><span class=n>oos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectOutputStream</span><span class=p>(</span><span class=k>new</span><span class=w> </span><span class=n>FileOutputStream</span><span class=p>(</span><span class=s>&#34;a.obj));
+</span></span></span><span class=line><span class=cl><span class=s>oos.writeObject(s1);
+</span></span></span><span class=line><span class=cl><span class=s>oos.close();
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>// 从文件反序列化
+</span></span></span><span class=line><span class=cl><span class=s>ObjectInputStream ois = new ObjectInputStream(new FileInputStream(&#34;</span><span class=n>a</span><span class=p>.</span><span class=na>obj</span><span class=s>&#34;));
+</span></span></span><span class=line><span class=cl><span class=s>Singleton s2 = (Singleton) ois.readObject();
+</span></span></span><span class=line><span class=cl><span class=s>ois.close();
+</span></span></span><span class=line><span class=cl><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>System.out.println(s1 == s2); // false
+</span></span></span></code></pre></td></tr></table></div></div><p>输出false，即反序列化得到的对象时一个新的实例，破坏了单例。因为Java反序列化机制通过反射创建一个新对象，<strong>不会调用构造方法</strong>， 也不会执行<code>getInstance()</code>。所以每次<code>readObject()</code>都会产生一个新的对象副本。</p><h4 id=解决方案>解决方案<a hidden class=anchor aria-hidden=true href=#解决方案>#</a></h4><p>通过实现<code>readResolve()</code>可以解决，在类中添加这个方法：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>readResolve</span><span class=p>()</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>ObjectStreamException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>return</span><span class=w> </span><span class=n>instance</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>当 JVM 反序列化时，会优先调用 <code>readResolve()</code>， 把返回的对象当作反序列化结果返回，从而<strong>保证返回的仍然是原有的单例实例</strong>。</p><h3 id=反射调用私有构造方法>反射调用私有构造方法<a hidden class=anchor aria-hidden=true href=#反射调用私有构造方法>#</a></h3><p>正常情况下，因为单例类中设置了构造方法的访问修饰符是<code>private</code>，不能再外部直接访问。但是反射可以绕过权限检查：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>Constructor</span><span class=o>&lt;</span><span class=n>Singleton</span><span class=o>&gt;</span><span class=w> </span><span class=n>c</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Singleton</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getDeclaredConstructor</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>c</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w> </span><span class=c1>// 重要：设置可访问，关闭访问检查</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>Singleton</span><span class=w> </span><span class=n>s1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Singleton</span><span class=p>.</span><span class=na>getInstance</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>Singleton</span><span class=w> </span><span class=n>s2</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>c</span><span class=p>.</span><span class=na>newInstance</span><span class=p>();</span><span class=w> </span><span class=c1>// 调用无参构造器创建此 Class 对象所表示的类的一个新实例。</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=n>s1</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>s2</span><span class=p>);</span><span class=w> </span><span class=c1>// false</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>输出是false，说明反射调用私有构造器创建了<strong>新对象实例</strong>，破坏单例唯一性。</p><h3 id=使用枚举类解决>使用枚举类解决<a hidden class=anchor aria-hidden=true href=#使用枚举类解决>#</a></h3><p>使用枚举类实现单例模式，可以防止两种破坏。</p><ol><li>枚举反序列化时不会new新对象，而是直接用类加载时创建的那个枚举实例。</li><li>枚举的构造器是由JVM特殊处理的，在类加载时自动调用，反射不能通过构造器类（<code>Constructor.newInstance()</code>）调用枚举的构造器，也就是不能通过反射创建枚举实例。</li></ol></div><footer class=post-footer><ul class=post-tags></ul><nav class=paginav><a class=next href=https://Xloading-919.github.io/zh/%E6%95%B0%E7%BB%84%E5%8F%8C%E6%8C%87%E9%92%88/><span class=title>下一页 »</span><br><span>数组双指针</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://Xloading-919.github.io/zh/>Xloading's Blog</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="复制";function s(){t.innerHTML="已复制！",setTimeout(()=>{t.innerHTML="复制"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

@@ -9,11 +9,26 @@
     <lastBuildDate>Mon, 27 Oct 2025 19:44:47 +0800</lastBuildDate>
     <atom:link href="https://Xloading-919.github.io/zh/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>双指针</title>
-      <link>https://Xloading-919.github.io/zh/%E5%8F%8C%E6%8C%87%E9%92%88/</link>
+      <title>数组双指针</title>
+      <link>https://Xloading-919.github.io/zh/%E6%95%B0%E7%BB%84%E5%8F%8C%E6%8C%87%E9%92%88/</link>
       <pubDate>Mon, 27 Oct 2025 19:44:47 +0800</pubDate>
-      <guid>https://Xloading-919.github.io/zh/%E5%8F%8C%E6%8C%87%E9%92%88/</guid>
-      <description></description>
+      <guid>https://Xloading-919.github.io/zh/%E6%95%B0%E7%BB%84%E5%8F%8C%E6%8C%87%E9%92%88/</guid>
+      <description>&lt;h2 id=&#34;15-三数之和&#34;&gt;&lt;a href=&#34;https://leetcode.cn/problems/3sum/&#34;&gt;15. 三数之和&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;要求：找到和为0的三个数的组合，三个数不能重复。&lt;/p&gt;
+&lt;h3 id=&#34;思路排序双指针求和&#34;&gt;思路：排序双指针求和&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;这里因为不要求下标，只需要记录数值，所以可以排序打乱，先排序&lt;/li&gt;
+&lt;li&gt;三个数，可以先固定一个数在最左边，另外两个数在后面的部分使用双指针求得&lt;/li&gt;
+&lt;li&gt;遍历每个位置作为最左边得数，得到所有答案&lt;/li&gt;
+&lt;li&gt;最优就是$O(n^2)$复杂度了&lt;/li&gt;
+&lt;li&gt;要求不能重复，
+&lt;ol&gt;
+&lt;li&gt;外层遍历最左边的数时，跳过和前一次遍历相同的数&lt;/li&gt;
+&lt;li&gt;内层遍历时，在和为0时，两个指针指向的数收缩时也要跳过相同的数值&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;代码：&lt;/p&gt;</description>
     </item>
     <item>
       <title>哈希表</title>

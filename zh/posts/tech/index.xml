@@ -138,7 +138,7 @@
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td style=&#34;text-align: left&#34;&gt;延迟&lt;/td&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;低&lt;del&gt;中（ms&lt;/del&gt;s）&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;低~中（ms~s）&lt;/td&gt;
           &lt;td style=&#34;text-align: left&#34;&gt;极低（亚毫秒级）&lt;/td&gt;
           &lt;td style=&#34;text-align: left&#34;&gt;低（ms 级）&lt;/td&gt;
       &lt;/tr&gt;
@@ -219,7 +219,7 @@
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;hr&gt;
-&lt;h2 id=&#34;五典型应用场景推荐&#34;&gt;五、典型应用场景推荐&lt;/h2&gt;
+&lt;h2 id=&#34;五典型应用场景&#34;&gt;五、典型应用场景&lt;/h2&gt;
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;

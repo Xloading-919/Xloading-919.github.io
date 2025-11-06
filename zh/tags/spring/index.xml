@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Spring on Xloading&#39;s Blog</title>
+    <link>https://Xloading-919.github.io/zh/tags/spring/</link>
+    <description>Recent content in Spring on Xloading&#39;s Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh</language>
+    <lastBuildDate>Thu, 06 Nov 2025 15:39:42 +0800</lastBuildDate>
+    <atom:link href="https://Xloading-919.github.io/zh/tags/spring/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Spring Bean 生命周期</title>
+      <link>https://Xloading-919.github.io/zh/spring-bean-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</link>
+      <pubDate>Thu, 06 Nov 2025 15:39:42 +0800</pubDate>
+      <guid>https://Xloading-919.github.io/zh/spring-bean-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;Spring Bean 生命周期这个点之前都是背过那9步。但是具体的每个步骤是有什么意义一直没有研究过。这次来看看每个步骤有什么意义。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;1-实例化bean&#34;&gt;1. 实例化Bean&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;首先是把Bean进行实例化。容器找到配置文件中的Bean定义，通过反射创建实例。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

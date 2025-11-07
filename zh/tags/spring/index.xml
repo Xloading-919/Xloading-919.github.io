@@ -16,9 +16,8 @@
       <description>&lt;blockquote&gt;
 &lt;p&gt;Spring Bean 生命周期这个点之前都是背过那9步。但是具体的每个步骤是有什么意义一直没有研究过。这次来看看每个步骤有什么意义。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&#34;1-实例化bean&#34;&gt;1. 实例化Bean&lt;/h2&gt;
-&lt;blockquote&gt;
-&lt;p&gt;首先是把Bean进行实例化。容器找到配置文件中的Bean定义，通过反射创建实例。&lt;/p&gt;</description>
+&lt;h2 id=&#34;1-bean定义的加载与解析&#34;&gt;1. Bean定义的加载与解析&lt;/h2&gt;
+&lt;p&gt;在Spring IOC 容器启动时，会把配置文件、注解、配置类中的写的Bean信息加载到一个Map中，叫做BeanDefinition，其中存储了类名、作用域、延迟初始化等元数据。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
